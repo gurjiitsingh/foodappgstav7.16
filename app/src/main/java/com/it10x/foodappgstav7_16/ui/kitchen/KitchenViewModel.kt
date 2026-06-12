@@ -392,27 +392,7 @@ class KitchenViewModel(
                 }
             }
 
-//            withContext(Dispatchers.IO) {
-//                try {
-//                    val items = lockAndFetchBatch(batchId)
-//                    if (items.isNotEmpty()) {
-//                    //    Log.e("PRINT_FLOW", "🔥 Printing batch=$batchId items=${items.size}")
-//                        printerManager.enqueueKitchen(
-//                            sessionKey = tableNo,
-//                            orderType = orderType,
-//                            items = items
-//                        )
-//                    }
-//
-//                    tableKotSyncService.syncTableSnapshot(
-//                        tableId = tableNo,
-//                        source = source
-//                    )
-//
-//                } catch (e: Exception) {
-//                    Log.e("ASYNC_TASK", "❌ Background failed", e)
-//                }
-//            }
+
 
 
             true
@@ -422,18 +402,7 @@ class KitchenViewModel(
         }
     }
 
-//    @Transaction
-//    suspend fun lockAndFetchBatch(batchId: String): List<PosKotItemEntity> {
-//
-//        val updated = kotItemDao.markBatchKitchenPrintedBatch(batchId)
-//
-//        if (BuildConfig.DEBUG) {
-//            Log.e("LOCK_BATCH", "batch=$batchId updatedRows=$updated")
-//        }
-//        if (updated == 0) return emptyList()
-//
-//        return kotItemDao.getAllItemsByBatchId(batchId)
-//    }
+
 
 
     @Transaction
@@ -560,12 +529,7 @@ class KitchenViewModel(
 
             Log.d("KOT_DEBUG", "--- WaiterKitchenViewmodel----")
 
-//            cartItems.forEach {
-//                Log.d(
-//                    "TABLE_SNAPSHOOT_DEBUG",
-//                    "Item: ${it.name} qty=${it.quantity} note=${it.note}"
-//                )
-//            }
+
 
             val items = cartItems.map { cart ->
                 //    Log.d("KOT_DEBUG", "Saving item: ${cart.name} qty=${cart.quantity}")

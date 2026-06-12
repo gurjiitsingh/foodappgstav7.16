@@ -2,6 +2,7 @@ package com.it10x.foodappgstav7_16.data.pos
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.it10x.foodappgstav7_16.data.inventory.dao.ProductRecipeDao
 import com.it10x.foodappgstav7_16.data.online.sync.SyncQueueDao
 import com.it10x.foodappgstav7_16.data.online.sync.SyncQueueEntity
 import com.it10x.foodappgstav7_16.data.printqueue.PrintQueueEntity
@@ -9,7 +10,7 @@ import com.it10x.foodappgstav7_16.data.pos.dao.*
 import com.it10x.foodappgstav7_16.data.pos.entities.*
 import com.it10x.foodappgstav7_16.data.pos.entities.config.*
 import com.it10x.foodappgstav7_16.data.printqueue.PrintQueueDao
-
+import com.it10x.foodappgstav7_16.data.pos.entity.ProductRecipeEntity
 @Database(
     entities = [
         ProductEntity::class,
@@ -35,9 +36,12 @@ import com.it10x.foodappgstav7_16.data.printqueue.PrintQueueDao
         SyncQueueEntity::class,
         ModifierGroupEntity::class,
         ModifierItemEntity::class,
-        ProductModifierEntity::class
+        ProductModifierEntity::class,
+        ProductRecipeEntity::class,
+        InventorySyncEntity::class
+
     ],
-    version = 103,              // ⬆️ increment version since schema changed
+    version = 104,              // ⬆️ increment version since schema changed
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -69,4 +73,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun modifierGroupDao(): ModifierGroupDao
     abstract fun modifierItemDao(): ModifierItemDao
     abstract fun productModifierDao(): ProductModifierDao
+
+    abstract fun productRecipeDao(): ProductRecipeDao
+
+    abstract fun inventorySyncDao(): InventorySyncDao
 }

@@ -137,21 +137,7 @@ class WaiterKitchenViewModel(
                     return@launch
                 }
 
-//                val billSaved = saveCartItemToBillView(
-//                    orderType = orderType,
-//                    sessionId = sessionId,
-//                    tableNo = tableNo,
-//                    cartItems = latestCart,
-//                    deviceId = deviceId,
-//                    deviceName = deviceName,
-//                    appVersion = "appVersion",
-//                    role = role,
-//                )
-            //    Log.d("WaiterKitchenVM", " items=${latestCart.size}")
-//                if (!billSaved) {
-//                    Log.e("WaiterKitchenVM", "❌ Bill save failed")
-//                    return@launch
-//                }
+
 
                 repository.clearCart(orderType, tableNo)
                 cartRepository.syncCartCount(tableNo)

@@ -27,6 +27,7 @@ import com.it10x.foodappgstav7_16.data.PrinterPreferences
 import com.it10x.foodappgstav7_16.data.online.sync.PrinterSyncRepository
 import com.it10x.foodappgstav7_16.data.pos.repository.PrinterRepository
 import com.it10x.foodappgstav7_16.data.printer.PrinterRestoreManager
+import com.it10x.foodappgstav7_16.viewmodel.InventorySyncViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,6 +40,8 @@ fun SyncScreen(
     val productVm: ProductSyncViewModel = viewModel()
     val outletVm: OutletSyncViewModel = viewModel()
     val tableVm: TableSyncViewModel = viewModel()
+
+    val inventorySyncVm: InventorySyncViewModel = viewModel()
 
     val productSyncing by productVm.syncing.collectAsState()
     val productStatus by productVm.status.collectAsState()
@@ -59,6 +62,9 @@ fun SyncScreen(
     val customerSyncVm: CustomerSyncViewModel = viewModel(
         factory = CustomerSyncViewModelFactory(application)
     )
+
+    val inventorySyncing by inventorySyncVm.isSyncing.collectAsState()
+    val inventoryStatus by inventorySyncVm.status.collectAsState()
 
     val customerSyncing by customerSyncVm.syncing.collectAsState()
     val customerStatus by customerSyncVm.status.collectAsState()
@@ -152,6 +158,8 @@ fun SyncScreen(
 
                 }
 
+
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -210,6 +218,8 @@ fun SyncScreen(
 
                 }
 
+
+
             }
         }
 
@@ -261,6 +271,30 @@ fun SyncScreen(
 //                    )
 //
 //                    Text(customerStatus)
+                }
+
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+
+                    SmallSyncButton(
+                        enabled =
+                            !inventorySyncing &&
+                                    !productSyncing &&
+                                    !outletSyncing &&
+                                    !tableSyncing,
+                        text = if (inventorySyncing)
+                            "Syncing Inventory…"
+                        else
+                            "Sync Inventory",
+                        onClick = {
+                            inventorySyncVm.syncInventoryNow()
+                        }
+                    )
+
+                    Text(inventoryStatus)
                 }
             }
         }

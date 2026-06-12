@@ -108,7 +108,12 @@ GROUP BY categoryId
 
 
 
-
+    @Query("""
+    SELECT *
+    FROM pos_order_items
+    WHERE paymentStatus = 'PAID'
+""")
+    suspend fun getPaidItems(): List<PosOrderItemEntity>
 
 }
 

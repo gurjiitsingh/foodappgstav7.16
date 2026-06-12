@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.it10x.foodappgstav7_16.data.pos.AppDatabaseProvider
 import com.it10x.foodappgstav7_16.data.online.models.repository.ProductSyncRepository
 import com.it10x.foodappgstav7_16.data.online.models.repository.ModifierSyncRepository // 👈 ADD THIS
+import com.it10x.foodappgstav7_16.data.online.repository.ProductRecipeSyncRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -25,6 +26,8 @@ class ProductSyncViewModel(app: Application) : AndroidViewModel(app) {
     private val _status = MutableStateFlow<String>("")
     val status: StateFlow<String> = _status
 
+    private val recipeRepo =
+        ProductRecipeSyncRepository(db)
     fun syncAll() {
         viewModelScope.launch {
             try {
@@ -46,6 +49,10 @@ class ProductSyncViewModel(app: Application) : AndroidViewModel(app) {
                 modifierRepo.syncProductModifiers()
 
                 _status.value = "Sync complete 🎉"
+
+                _status.value =
+                    "Syncing product recipes..."
+                recipeRepo.syncProductRecipes()
 
             } catch (e: Exception) {
                 _status.value = "Sync failed: ${e.message}"
