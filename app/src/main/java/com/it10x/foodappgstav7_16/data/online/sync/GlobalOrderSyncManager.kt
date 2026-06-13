@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 class GlobalOrderSyncManager(
     private val firestore: FirebaseFirestore,
@@ -30,6 +31,13 @@ class GlobalOrderSyncManager(
 
     private var mainPosListener: ListenerRegistration? = null
     private var waiterListener: ListenerRegistration? = null
+
+
+
+
+    private val lastProcessedMap = ConcurrentHashMap<String, Long>()
+
+
 
     // -------------------- START LISTENERS --------------------
 
@@ -247,7 +255,23 @@ private fun startMainPosListener() {
                     scope.launch(Dispatchers.IO) {
                         try {
 
-                            // 🔐 DEDUP (CORE FIX)
+                            // Ignore older updates for same table
+                            val lastUpdated = lastProcessedMap[tableId] ?: 0L
+
+                            if (updatedAt <= lastUpdated) {
+                                Log.d(
+                                    "SYNC_ORDER",
+                                    "⏭️ Ignoring stale update table=$tableId updatedAt=$updatedAt last=$lastUpdated"
+                                )
+                                return@launch
+                            }
+                            Log.d(
+                                "SYNC_ORDER",
+                                "ACCEPT table=$tableId updatedAt=$updatedAt previous=${lastProcessedMap[tableId]}"
+                            )
+
+                            lastProcessedMap[tableId] = updatedAt
+
                             val uniqueId = "${tableId}_$updatedAt"
 
                             val insertResult = processedDao.insert(
@@ -257,20 +281,27 @@ private fun startMainPosListener() {
                                 )
                             )
 
-                            // 🚫 ALREADY PROCESSED → SKIP
                             if (insertResult == -1L) {
                                 Log.d("SYNC", "⏭️ Already processed: $uniqueId")
                                 return@launch
                             }
 
-                            // ✅ FIRST TIME ONLY (WAITER or POS both allowed once)
-                            Log.d("SYNC", "✅ Processing first time: $uniqueId (source=$source)")
-
+                            Log.d("SYNC", "✅ Processing: $uniqueId")
+                            Log.d(
+                                "SYNC_ORDER",
+                                "PROCESSING table=$tableId updatedAt=$updatedAt items=${items.size}"
+                            )
+                            // IMPORTANT: no nested launch
                             kitchenViewModel.replaceKotFromFirestoreWaiterListener(
                                 tableId = tableId,
                                 sessionId = sessionId,
                                 items = items,
-                                source = "FIRESTORE"   // ✅ HERE
+                                source = "FIRESTORE"
+                            )
+
+                            Log.d(
+                                "SYNC_ORDER",
+                                "DONE table=$tableId updatedAt=$updatedAt"
                             )
 
                         } catch (e: Exception) {

@@ -828,19 +828,7 @@ class BillViewModel(
 
                     // 🔥 FIRESTORE CLEAR
                     try {
-                      //  tableKotSyncService.clearTableSnapshot(tableId)
-                        //que strategy
-//                        SyncManagerProvider.get().addClearTable(tableId)
-//                        kotRepository.deleteKotByTable(tableId)
-
-//                        // 1️⃣ CLEAR FIRESTORE IMMEDIATELY
-//                        tableKotSyncService.clearTableSnapshot(tableId)
-//
-//                        // 2️⃣ DELETE LOCAL KOT
-//                        kotRepository.deleteKotByTable(tableId)
-//
-//                        // 3️⃣ OPTIONAL BACKUP QUEUE
-//                        SyncManagerProvider.get().addClearTable(tableId)
+                       SyncManagerProvider.get().addClearTable(tableId)
 
 
 // 1️⃣ DELETE LOCAL
