@@ -90,6 +90,7 @@ import com.it10x.foodappgstav7_16.data.pos.repository.WaiterKitchenRepository
 import com.it10x.foodappgstav7_16.data.printer.PrinterUploadManager
 //import com.it10x.foodappgstav7_16.firebase.ClientFirebaseConfig
 import com.it10x.foodappgstav7_16.data.model.ClientFirebaseConfig
+import com.it10x.foodappgstav7_16.data.online.sync.TableKotSyncService
 import com.it10x.foodappgstav7_16.ui.cart.CartViewModel
 import com.it10x.foodappgstav7_16.ui.settings.FirstAutoSyncScreen
 import com.it10x.foodappgstav7_16.ui.waiterkitchen.WaiterKitchenViewModel
@@ -316,6 +317,17 @@ class MainActivity : ComponentActivity() {
                     )
 
                     return@FoodPosTheme
+                }
+
+                val tableSyncService = remember {
+                    TableKotSyncService(
+                        firestore = firestore,
+                        kotItemDao = db.kotItemDao()
+                    )
+                }
+
+                LaunchedEffect(Unit) {
+                    tableSyncService.cleanupStaleFirestoreTables()
                 }
 
 

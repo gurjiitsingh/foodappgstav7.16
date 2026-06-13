@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.Transaction
 import com.google.firebase.firestore.BuildConfig
 import com.google.firebase.firestore.FirebaseFirestore
+import com.it10x.foodappgstav7_16.core.PosRole
+import com.it10x.foodappgstav7_16.core.PosRoleManager
 import com.it10x.foodappgstav7_16.data.PrinterRole
 import com.it10x.foodappgstav7_16.data.online.sync.TableKotSyncService
 import com.it10x.foodappgstav7_16.data.pos.AppDatabaseProvider
@@ -436,12 +438,25 @@ class KitchenViewModel(
                 return
             }
 
+            Log.e(
+                "FIRESTORE_IMPORT",
+                "TABLE=$tableId ITEMS=${items.size}"
+            )
+
             Log.d(
                 "SYNC_VM",
                 "DELETE table=$tableId items=${items.size}"
             )
 
             kotRepository.deleteKotByTable(tableId)
+
+//            if (PosRoleManager.getRole(getApplication()) == PosRole.MAIN) {
+//                Log.e(
+//                    "FIRESTORE_IMPORT",
+//                    "BLOCKED ON MAIN POS"
+//                )
+//                return
+//            }
 
             if (items.isEmpty()) {
                 Log.d("SYNC_VM", "🪹 Table empty after delete: $tableId")

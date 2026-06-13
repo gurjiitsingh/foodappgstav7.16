@@ -12,7 +12,21 @@ class SyncQueueManager(
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     init {
+        cleanupOldJobs()
         startWorker()
+    }
+
+    private fun cleanupOldJobs() {
+        scope.launch {
+
+            val cutoff =
+                System.currentTimeMillis() -
+                        24 * 60 * 60 * 1000
+
+            dao.deleteOldDoneJobs(cutoff)
+
+            Log.d("SYNC_QUEUE", "🧹 Old queue jobs cleaned")
+        }
     }
 
     fun addTableUpdate(tableId: String) {
@@ -30,7 +44,7 @@ class SyncQueueManager(
         }
     }
 
-    fun addClearTable(tableId: String) {
+    suspend fun addClearTable(tableId: String) {
         scope.launch {
             dao.insert(
                 SyncQueueEntity(
@@ -60,18 +74,24 @@ class SyncQueueManager(
                             }
 
                             "TABLE_CLEAR" -> {
-                                tableService.syncTableSnapshot(
+                                tableService.clearTableSnapshot(
                                     job.tableId,
                                     "QUEUE_CLEAR"
                                 )
                             }
 
 //                            "TABLE_CLEAR" -> {
-//                                tableService.clearTableSnapshot(job.tableId)
+//                                tableService.syncTableSnapshot(
+//                                    job.tableId,
+//                                    "QUEUE_CLEAR"
+//                                )
 //                            }
+
+
                         }
 
                         dao.markDone(job.id)
+                       // dao.deleteJob(job.id)
                     }
 
                 } catch (e: Exception) {

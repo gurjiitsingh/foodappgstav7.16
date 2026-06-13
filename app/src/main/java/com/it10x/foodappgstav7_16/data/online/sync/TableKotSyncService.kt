@@ -14,6 +14,8 @@ class TableKotSyncService(
 
 
 
+
+  //USED CLEAR TABLE FROM QUE
     suspend fun syncTableSnapshot(
         tableId: String,
         source: String,
@@ -57,7 +59,7 @@ class TableKotSyncService(
     }
 
 
-    suspend fun clearTableSnapshot(tableNo: String) {
+    suspend fun clearTableSnapshot(tableNo: String,source: String) {
 
         try {
             val tableRef = firestore
@@ -66,7 +68,7 @@ class TableKotSyncService(
 
             val updateMap = mapOf(
                 "tableId" to tableNo,
-                "source" to "PAYMENT_CLEAR",
+                "source" to source,
                 "status" to "CLOSED",
                 "active" to false,
                 "cartCount" to 0,
@@ -82,6 +84,52 @@ class TableKotSyncService(
             Log.e(
                 "TABLE_SYNC",
                 "❌ Failed to clear table snapshot",
+                e
+            )
+        }
+    }
+
+
+    suspend fun cleanupStaleFirestoreTables() {
+
+        try {
+
+            val snapshot = firestore
+                .collection("pos_tables")
+                .get()
+                .await()
+
+            for (doc in snapshot.documents) {
+
+                val tableId =
+                    doc.getString("tableId")
+                        ?: continue
+
+                val active =
+                    doc.getBoolean("active")
+                        ?: false
+
+                if (!active) continue
+
+                val localItems =
+                    kotItemDao.getItemsByTable(tableId)
+
+                if (localItems.isEmpty()) {
+
+                    Log.d(
+                        "TABLE_CLEANUP",
+                        "Found stale table $tableId"
+                    )
+
+                    clearTableSnapshot(tableId, source="STALE_CLEANUP")
+                }
+            }
+
+        } catch (e: Exception) {
+
+            Log.e(
+                "TABLE_CLEANUP",
+                "Cleanup failed",
                 e
             )
         }

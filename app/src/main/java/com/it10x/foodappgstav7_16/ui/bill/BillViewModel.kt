@@ -828,17 +828,25 @@ class BillViewModel(
 
                     // 🔥 FIRESTORE CLEAR
                     try {
-                       SyncManagerProvider.get().addClearTable(tableId)
+
 
 
 // 1️⃣ DELETE LOCAL
                         kotRepository.deleteKotByTable(tableId)
 
+//                        val remaining =
+//                            kotItemDao.getItemsByTable(tableId).size
+//
+//                        Log.d(
+//                            "TABLE_CLOSE",
+//                            "After delete table=$tableId remaining=$remaining"
+                //        )
+
 // 2️⃣ UPDATE FIRESTORE TO EMPTY
-                        tableKotSyncService.clearTableSnapshot(tableId)
+                       tableKotSyncService.clearTableSnapshot(tableId,source="PAYMENT_CLEAR")
 
 // 3️⃣ BACKUP QUEUE
-                        SyncManagerProvider.get().addClearTable(tableId)
+                      SyncManagerProvider.get().addClearTable(tableId)
 
 
 

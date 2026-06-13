@@ -15,4 +15,14 @@ interface SyncQueueDao {
 
     @Query("UPDATE sync_queue SET status='DONE' WHERE id=:id")
     suspend fun markDone(id: String)
+
+    @Query("DELETE FROM sync_queue WHERE id=:id")
+    suspend fun deleteJob(id: String)
+
+    @Query("""
+DELETE FROM sync_queue
+WHERE status='DONE'
+AND createdAt < :cutoff
+""")
+    suspend fun deleteOldDoneJobs(cutoff: Long)
 }

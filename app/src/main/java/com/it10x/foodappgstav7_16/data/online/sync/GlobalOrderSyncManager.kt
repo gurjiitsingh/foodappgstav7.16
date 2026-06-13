@@ -193,7 +193,7 @@ private fun startMainPosListener() {
     // Listen to only MAIN POS orders
 
     private fun startWaiterListener() {
-
+        Log.d("TABLE_SYNC", "✅ waiter is runn on time")
         waiterListener?.remove()
         waiterListener = null
 
